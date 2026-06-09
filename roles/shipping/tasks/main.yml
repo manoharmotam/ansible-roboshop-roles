@@ -1,0 +1,50 @@
+---
+# tasks file for shipping
+- name: Installing Myql
+  package: 
+    name: mysql
+    state: present
+
+- name: Setting the app user
+  import_role:
+    name: common-modules
+    tasks_from: user-setup
+
+- name: Setting the app user
+  import_role:
+    name: common-modules
+    tasks_from: user-setup
+
+- name: Installing Maven and its Dependencies
+  import_role:
+    name: common-modules
+    tasks_from: java
+
+- name: Installing PyMySQL for loading data
+  pip:
+    name: PyMySQL
+    executable: pip3.9
+
+- name: loading the data
+  community.mysql.mysql_db:
+    state: import
+    name: all
+    login_host: "{{ MYSQL_HOST }}"
+    login_user: "{{ MYSQL_USER }}"
+    login_password: "{{ MYSQL_PASSWORD }}"
+    target: "{{ item }}"
+  loop:
+  - /app/db/schema.sql
+  - /app/db/app-user.sql 
+  - /app/db/master-data.sql
+
+- name: Creating systemd unit
+  import_role:
+    name: common-modules
+    tasks_from: systemd-setup
+
+- name: Starting and Enabling the services
+  service:
+    name: shipping
+    state: restarted
+    enabled: yes

@@ -1,0 +1,45 @@
+---
+# tasks file for catalogue
+- name: Setting the app user
+  import_role:
+    name: common-modules
+    tasks_from: user-setup
+
+- name: Setting up nodejs
+  import_role:
+    name: common-modules
+    tasks_from: nodejs
+
+- name: Creating systemd unit
+  import_role:
+    name: common-modules
+    tasks_from: systemd-setup
+
+- name: Creating the Mongo Repo
+  copy:
+    src: mongo.repo
+    dest: /etc/yum.repos.d/mongo.repo
+- name: Installing Mongosh utility
+  package:
+    name: mongodb-mongosh
+    state: present
+- name: checking if the catalogue schema exists
+  shell: mongosh --host "{{ MONGODB_HOST }}" --eval 'db.getMongo().getDBNames().indexOf("catalogue")'
+  register: index
+  tags:
+  - mongodb
+- name: print catalogue_output
+  debug: 
+    msg: "{{ index }}"
+  tags:
+  - mongodb
+- name: load Data to the schemas
+  shell: mongosh --host "{{ MONGODB_HOST }}" </app/db/master-data.js
+  when: index.stdout | int < 0
+  tags:
+  - mongodb
+- name: Starting and Enabling the services
+  service:
+    name: catalogue
+    state: restarted
+    enabled: yes

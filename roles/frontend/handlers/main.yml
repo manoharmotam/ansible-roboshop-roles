@@ -1,0 +1,7 @@
+---
+# handlers file for frontend
+- name: Starting and Enabling the services
+  service:
+    name: nginx
+    state: restarted
+    enabled: yes

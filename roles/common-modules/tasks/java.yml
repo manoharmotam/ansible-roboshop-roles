@@ -1,0 +1,12 @@
+- name: Installing Maven
+  package: 
+    name: maven
+    state: present
+- name: Installing Dependencies
+  command: mvn clean package
+  args:
+    chdir: /app
+- name: Move shipping jar file
+  command: mv target/shipping-1.0.jar shipping.jar
+  args:
+    chdir: /app    

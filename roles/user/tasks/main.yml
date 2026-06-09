@@ -1,0 +1,22 @@
+---
+# tasks file for user
+- name: Setting the app user
+  import_role:
+    name: common-modules
+    tasks_from: user-setup
+
+- name: Setting up nodejs
+  import_role:
+    name: common-modules
+    tasks_from: nodejs
+
+- name: Creating systemd unit
+  import_role:
+    name: common-modules
+    tasks_from: systemd-setup
+    
+- name: Starting and Enabling the services
+  service:
+    name: user
+    state: restarted
+    enabled: yes

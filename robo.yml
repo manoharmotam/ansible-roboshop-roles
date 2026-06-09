@@ -1,0 +1,5 @@
+- name: "Creating {{ component }} environment for roboshop"
+  hosts: "{{ component }}"
+  become: yes
+  roles:
+  - "{{ component }}"

@@ -1,0 +1,17 @@
+# aws_ec2.yaml
+plugin: amazon.aws.aws_ec2
+regions:
+  - us-east-1  # Specify the AWS region(s) you want to fetch instances from
+
+# (Optional) Group hosts by tags so you can target them in your playbooks
+leading_separator: false
+
+keyed_groups:
+  - key: tags.Name
+
+# Set the variable used to connect to the instances (usually public_ip or private_ip)
+hostnames:
+  - ip-address
+  - private-ip-address
+compose:
+  ansible_host: ip-address

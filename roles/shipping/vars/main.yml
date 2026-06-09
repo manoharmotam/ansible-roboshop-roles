@@ -1,0 +1,4 @@
+---
+# vars file for shipping
+MYSQL_USER: root
+MYSQL_PASSWORD: RoboShop@1

@@ -1,0 +1,23 @@
+---
+# tasks file for payment
+
+- name: Setting the app user
+  import_role:
+    name: common-modules
+    tasks_from: user-setup
+
+- name: Installing python and its Dependencies
+  import_role:
+    name: common-modules
+    tasks_from: python
+    
+- name: Creating systemd unit
+  import_role:
+    name: common-modules
+    tasks_from: systemd-setup
+
+- name: Starting and Enabling the services
+  service:
+    name: payment
+    state: restarted
+    enabled: yes
