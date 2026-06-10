@@ -1,20 +1,21 @@
-ansible_user: ec2-user
-ansible_password: DevOps321
+# ansible_user: ansible
+# ansible_ssh_private_key_file: ~/.ssh/ansible.pem
 PROJECT_NAME: robo
 DOMAIN_NAME: mrmotam.online
 INSTANCES:
 - mongodb
-- redis
-- mysql
-- rabbitMQ
-- catalogue
-- user
-- cart
-- shipping
-- payment
-- frontend
-AMI_ID: ami-0220d79f3f480ecf5
+# - redis
+# - mysql
+# - rabbitMQ
+# - catalogue
+# - user
+# - cart
+# - shipping
+# - payment
+# - frontend
+AMI_ID: ami-02dfbd4ff395f2a1b #ami-0220d79f3f480ecf5
 INSTANCE_TYPE: t3.micro
+KEY_NAME: ami2
 METHOD: create
 MONGODB_HOST: mongodb.mrmotam.online
 REDIS_HOST: redis.mrmotam.online

@@ -1,0 +1,74 @@
+- name: Creating instances for roboshop Env
+  hosts: local
+  tasks:
+  - name: Create instances 
+    amazon.aws.ec2_instance:
+      name: "{{ item }}"
+      instance_type: "{{ INSTANCE_TYPE }}"
+      image_id: "{{ AMI_ID }}"
+      key_name: "{{ KEY_NAME }}"
+      security_groups:
+      - "{{ PROJECT_NAME }}-{{ item }}"
+      - "mylocal-sg"
+      tags:
+        Name: "{{ item }}"
+    loop: "{{ INSTANCES }}"
+    register: instance_outputs
+    when: METHOD == "create" 
+  - name: create R53 records for private IP
+    amazon.aws.route53:
+      state: present
+      zone: "{{ DOMAIN_NAME }}"
+      record: "{{ item.item }}.{{ DOMAIN_NAME }}" 
+      type: A
+      ttl: 1
+      value: "{{ item.instances[0].private_ip_address }}" 
+      overwrite: true
+    loop: "{{ instance_outputs.results }}" 
+    when: METHOD == "create"
+  - name: Create R53 entry for frontend
+    amazon.aws.route53:
+      state: present
+      zone: "{{ DOMAIN_NAME }}"
+      record: "{{ DOMAIN_NAME }}" 
+      type: A
+      ttl: 1
+      value: "{{ item.instances[0].public_ip_address }}" 
+      overwrite: true
+    loop: "{{ instance_outputs.results }}" 
+    when: 
+    - METHOD == "create"
+    - item.item == "frontend"
+
+  - name: Delete instances 
+    amazon.aws.ec2_instance:
+      state: terminated
+      wait: false
+      name: "{{ item }}"
+      tags:
+        Name: "{{ item }}"
+    loop: "{{ INSTANCES }}"
+    register: instance_outputs
+    when: METHOD == "delete" 
+  - name: Delete R53 records for private IP
+    amazon.aws.route53:
+      state: absent
+      zone: "{{ DOMAIN_NAME }}"
+      record: "{{ item.item }}.{{ DOMAIN_NAME }}" 
+      type: A
+      ttl: 1
+      value: "{{ item.instances[0].private_ip_address }}" 
+    loop: "{{ instance_outputs.results }}" 
+    when: METHOD == "delete"
+  - name: Delete R53 entry for frontend
+    amazon.aws.route53:
+      state: absent
+      zone: "{{ DOMAIN_NAME }}"
+      record: "{{ DOMAIN_NAME }}" 
+      type: A
+      ttl: 1
+      value: "{{ item.instances[0].public_ip_address }}" 
+    loop: "{{ instance_outputs.results }}" 
+    when: 
+    - METHOD == "delete"
+    - item.item == "frontend"

@@ -1,0 +1,35 @@
+# #Currently in development
+
+# - name: "Creating user on {{ component }}."
+#   hosts: "{{ component }}"
+#   become: yes
+#   vars:
+#     username: ansible
+#   tasks:
+#   - name: creating the ansible user
+#     user:
+#       name: "{{ username }}"
+#       uid: 1012
+#       generate_ssh_key: true
+#       ssh_key_type: rsa 
+#       ssh_key_bits: 4096
+#       ssh_key_file: ".ssh/id_rsa"
+#   - name: Creating cutom wheel config
+#     copy:
+#       dest: "/etc/sudoers.d/90-{{ username }}-wheel"
+#       content: "{{ username }}  ALL=(ALL)  NOPASSWD:ALL"
+#   - name: Read the private key 
+#     slurp:
+#       src: "/home/{{ username }}/.ssh/id_rsa"
+#     register: ssh_remote_key
+#   - name: Delete the pub key
+#     command: "mv /home/{{ username }}/.ssh/id_rsa.pub /home/{{ username }}/.ssh/authorized_keys"
+#       # removes: "/home/{{ username }}/.ssh/id_rsa.pub"
+#       #creates: "/home/{{ username }}/.ssh/authorized_keys"
+#   - name: Saving the private key to local as .pem file
+#     copy:
+#       content: "{{ ssh_remote_key.content | b64decode }}"
+#       dest: "~/.ssh/{{ username }}.pem"
+#       mode: '0600'
+#     delegate_to: localhost
+#     become: false
